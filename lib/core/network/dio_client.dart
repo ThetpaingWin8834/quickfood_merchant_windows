@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import '../exceptions/unknown_exception.dart';
 import '../models/api_response.dart';
 import 'apiclient.dart';
@@ -25,7 +26,7 @@ class DioClient implements ApiClient {
         return handler.next(error);
       }
     }))
-    ..interceptors.add(LogInterceptor());
+    ..interceptors.add(PrettyDioLogger());
 
   void closeConnection() {
     _client.close();
@@ -55,7 +56,7 @@ class DioClient implements ApiClient {
     try {
       final response = await _client.post(url, data: body);
       return _handleResponse(response, fromJson: fromJson);
-    } catch (e, s) {
+    } catch (e) {
       return ApiResponse<T>(error: e, data: null);
     }
   }
@@ -86,9 +87,22 @@ class DioClient implements ApiClient {
   }
 
   @override
+  Future<ApiResponse<T>> send<T>(String url, String method,
+      {dynamic body}) async {
+    try {
+      final response = await _client.request(url,
+          data: body, options: Options(method: method));
+      return _handleResponse<T>(response);
+    } catch (e, s) {
+      print('put error $e \n stack trace: $s');
+
+      return ApiResponse<T>(error: e);
+    }
+  }
+
+  @override
   Future<ApiResponse<T>> put<T>(String url,
-      {required Map<String, dynamic> body,
-      T Function(Map<String, dynamic> json)? fromJson}) async {
+      {dynamic body, T Function(Map<String, dynamic> json)? fromJson}) async {
     try {
       final response = await _client.put(url, data: body);
       return _handleResponse<T>(response, fromJson: fromJson);
@@ -101,9 +115,7 @@ class DioClient implements ApiClient {
 
   @override
   Future<ApiResponse<T>> uploadFile<T>(String url,
-      {required File file,
-      String fileKey = 'file',
-      required Map<String, dynamic> body}) async {
+      {required File file, String fileKey = 'file', dynamic body}) async {
     body[fileKey] = await MultipartFile.fromFile(file.path);
     final formData = FormData.fromMap(body);
 
@@ -113,7 +125,6 @@ class DioClient implements ApiClient {
     } catch (e, s) {
       print('uploadFile error $e \n stacktrace: $s');
       return ApiResponse<T>(error: e);
-      ;
     }
   }
 }
