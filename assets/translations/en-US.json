@@ -3,5 +3,6 @@
     "username":"Username",
     "password":"Password",
     "enter_password":"Enter Password",
-    "enter_username":"Enter username"
+    "enter_username":"Enter username",
+    "login":"Login"
 }

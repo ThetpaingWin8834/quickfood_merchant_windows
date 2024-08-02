@@ -7,4 +7,5 @@ class MyLocale {
   static get password => 'password'.tr();
   static get enterPassword => 'enter_password'.tr();
   static get enterUsername => 'enter_username'.tr();
+  static get login => 'login'.tr();
 }

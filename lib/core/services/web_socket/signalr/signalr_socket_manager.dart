@@ -1,9 +1,9 @@
 import 'package:quick_merchant_windows/core/network/dio_client.dart';
-import 'package:quick_merchant_windows/core/web_socket/models/socket_config.dart';
-import 'package:quick_merchant_windows/core/web_socket/signalr/client/signalr_http_client.dart';
+import 'package:quick_merchant_windows/core/services/web_socket/models/socket_config.dart';
+import 'package:quick_merchant_windows/core/services/web_socket/signalr/client/signalr_http_client.dart';
 import 'package:signalr_netcore/signalr_client.dart';
 
-import '../../models/remote_message.dart';
+import '../../../models/remote_message.dart';
 
 typedef SocketRes = List<Object?>?;
 typedef SocketReq = List<Object>?;
@@ -21,7 +21,7 @@ class SignalrSocketManager {
   HubConnection? _connection;
 
   SignalrSocketManager({required this.config});
-  init() {
+  void init() {
     final option = HttpConnectionOptions(
       httpClient: SignalrHttpClientImpl(client: DioClient()),
       logMessageContent: true,

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:quick_merchant_windows/app.dart';
 import 'package:quick_merchant_windows/config/theme/app_theme.dart';
-import 'package:quick_merchant_windows/features/auth/log_in_screen.dart';
+import 'package:quick_merchant_windows/features/auth/auth_screen.dart';
 import 'package:window_manager/window_manager.dart';
 
 final flutterLocalNotification = FlutterLocalNotificationsPlugin();
@@ -14,12 +14,12 @@ void main() async {
   await EasyLocalization.ensureInitialized();
   runApp(
     EasyLocalization(
-      supportedLocales: [
+      supportedLocales: const [
         Locale('en', 'US'),
       ],
       path: 'assets/translations',
+      fallbackLocale: const Locale('en', 'US'),
       child: const MyApp(),
-      fallbackLocale: Locale('en', 'US'),
     ),
   );
 }
@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
       navigatorKey: App.navigatorKey,
       title: 'Flutter Demo',
       theme: AppTheme.lightTheme,
-      home: LoginScreen(),
+      home: const AuthScreen(),
     );
   }
 }

@@ -1,5 +1,9 @@
 class ApiConstants {
   static const isDebugMode = true;
+
+  static String mainUrl = isDebugMode
+      ? "https://analytics-api.quickfoodmm.com/api/v1/"
+      : "https://api.quickfoodmm.com/api/v1/";
   static const String hubHost = isDebugMode ? _analyticsHubHost : _apiHubHost;
   static const String _analyticsHubHost = "https://analytics.quickfoodmm.com/";
   static const String _apiHubHost = "https://admin.quickfoodmm.com/";

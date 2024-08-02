@@ -9,4 +9,5 @@ class ApiResponse<T> {
     this.statusCode,
     this.statusMessage,
   });
+  bool get isSuccess => error == null;
 }

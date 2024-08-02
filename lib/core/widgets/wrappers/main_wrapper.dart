@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class MainWrapper extends StatelessWidget {
-  MainWrapper({super.key});
+  const MainWrapper({super.key});
 
   @override
   Widget build(BuildContext context) {
