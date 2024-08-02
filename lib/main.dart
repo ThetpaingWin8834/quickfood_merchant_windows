@@ -1,14 +1,27 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:quick_merchant_windows/features/web/web_screen.dart';
+import 'package:quick_merchant_windows/app.dart';
+import 'package:quick_merchant_windows/config/theme/app_theme.dart';
+import 'package:quick_merchant_windows/features/auth/log_in_screen.dart';
 import 'package:window_manager/window_manager.dart';
 
-final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+final flutterLocalNotification = FlutterLocalNotificationsPlugin();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
   await initNotification();
-  runApp(const MyApp());
+  await EasyLocalization.ensureInitialized();
+  runApp(
+    EasyLocalization(
+      supportedLocales: [
+        Locale('en', 'US'),
+      ],
+      path: 'assets/translations',
+      child: const MyApp(),
+      fallbackLocale: Locale('en', 'US'),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -17,12 +30,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      supportedLocales: context.supportedLocales,
+      localizationsDelegates: context.localizationDelegates,
+      locale: context.locale,
+      navigatorKey: App.navigatorKey,
       title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const ExampleBrowser(),
+      theme: AppTheme.lightTheme,
+      home: LoginScreen(),
     );
   }
 }
@@ -36,6 +50,6 @@ Future initNotification() async {
     ),
   );
 
-  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  await flutterLocalNotification.initialize(initializationSettings);
 }
 //https://hr.esoftmm.com/#/notification/specific
