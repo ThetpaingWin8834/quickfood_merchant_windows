@@ -1,14 +1,8 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:quick_food_rider_v2/core/constants/my_locale.dart';
-import 'package:quick_food_rider_v2/core/exceptions/custom_exception.dart';
-import 'package:quick_food_rider_v2/core/extensions/context_exts.dart';
-import 'package:quick_food_rider_v2/core/utils/debug.dart';
-import 'package:quick_food_rider_v2/core/widgets/dialog/base_dialog.dart';
-
-import '../../../main_config_manager.dart';
-import '../../models/api_response.dart';
+import '../exceptions/unknown_exception.dart';
+import '../models/api_response.dart';
 import 'apiclient.dart';
 
 class DioClient implements ApiClient {
@@ -37,15 +31,7 @@ class DioClient implements ApiClient {
     _client.close();
   }
 
-  void handleNotAuthroizeError() {
-    MainConfigManager.mainNavigator.currentContext?.showTpwSDialog(
-        type: DialogType.error,
-        message: MyLocale.sessionTimeOut,
-        buttonText: MyLocale.ok,
-        onButtonClick: () {
-          MainConfigManager.instance.logOut();
-        });
-  }
+  void handleNotAuthroizeError() {}
 
   @override
   void removeToken() {
@@ -66,42 +52,36 @@ class DioClient implements ApiClient {
   Future<ApiResponse<T>> post<T>(String url,
       {required Object? body,
       T Function(Map<String, dynamic> json)? fromJson}) async {
-    mlog('Dio client posting - $url');
     try {
       final response = await _client.post(url, data: body);
       return _handleResponse(response, fromJson: fromJson);
     } catch (e, s) {
-      mlog('post error $e \n stack trace: $s');
-      return ErrorResponse<T>(e);
+      return ApiResponse<T>(error: e, data: null);
     }
   }
 
   ApiResponse<T> _handleResponse<T>(Response<dynamic> response,
       {T Function(Map<String, dynamic> json)? fromJson}) {
     final isSuccess = response.data['success'] as bool?;
-    mlog(response.data);
     if (isSuccess == true) {
-      return SuccessResponse(
-          fromJson?.call(response.data['data']) ?? response.data);
+      return ApiResponse(error: null, data: response.data);
     } else {
       final msg = response.data.handleNull((map) {
         return map['error']['message'];
       });
-      return ErrorResponse(CustomException(msg));
+      return ApiResponse(error: CustomException(message: msg));
     }
   }
 
   @override
   Future<ApiResponse<T>> get<T>(String url,
       {T Function(Map<String, dynamic> json)? fromJson}) async {
-    mlog('Dio client gettting - $url');
-
     try {
       final response = await _client.get(url);
       return _handleResponse<T>(response, fromJson: fromJson);
     } catch (e, s) {
-      mlog('get error $e \n stack trace: $s');
-      return ErrorResponse<T>(e, stackTrace: s);
+      print('get error $e \n stack trace: $s');
+      return ApiResponse<T>(error: e);
     }
   }
 
@@ -113,9 +93,9 @@ class DioClient implements ApiClient {
       final response = await _client.put(url, data: body);
       return _handleResponse<T>(response, fromJson: fromJson);
     } catch (e, s) {
-      mlog('put error $e \n stack trace: $s');
+      print('put error $e \n stack trace: $s');
 
-      return ErrorResponse<T>(e);
+      return ApiResponse<T>(error: e);
     }
   }
 
@@ -131,8 +111,9 @@ class DioClient implements ApiClient {
       final response = await _client.post(url, data: formData);
       return _handleResponse(response);
     } catch (e, s) {
-      mlog('uploadFile error $e \n stacktrace: $s');
-      return ErrorResponse<T>(e);
+      print('uploadFile error $e \n stacktrace: $s');
+      return ApiResponse<T>(error: e);
+      ;
     }
   }
 }

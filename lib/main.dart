@@ -1,17 +1,12 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:quick_merchant_windows/features/noti/firebase_noti_manager.dart';
 import 'package:quick_merchant_windows/features/web/web_screen.dart';
-import 'package:quick_merchant_windows/firebase_options.dart';
 import 'package:window_manager/window_manager.dart';
 
 final flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.windows);
-  await FirebasePushNotiManager.initPushNoti();
   await initNotification();
   runApp(const MyApp());
 }

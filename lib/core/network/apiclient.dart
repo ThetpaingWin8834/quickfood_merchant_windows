@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import '../../models/api_response.dart';
+import '../models/api_response.dart';
 
 abstract class ApiClient {
   Future<ApiResponse<T>> get<T>(
