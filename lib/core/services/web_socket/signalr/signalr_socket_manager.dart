@@ -1,7 +1,11 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:signalr_netcore/ihub_protocol.dart';
+import 'package:signalr_netcore/signalr_client.dart';
+
+import 'package:quick_merchant_windows/core/models/user.dart';
 import 'package:quick_merchant_windows/core/network/dio_client.dart';
 import 'package:quick_merchant_windows/core/services/web_socket/models/socket_config.dart';
 import 'package:quick_merchant_windows/core/services/web_socket/signalr/client/signalr_http_client.dart';
-import 'package:signalr_netcore/signalr_client.dart';
 
 import '../../../models/remote_message.dart';
 
@@ -17,13 +21,18 @@ class SignalrSocketManager {
   //     SignalrNotificationManager.internal();
   // factory SignalrNotificationManager() => _instance;
   final SocketClientConfig config;
-
+  final User user;
   HubConnection? _connection;
 
-  SignalrSocketManager({required this.config});
+  SignalrSocketManager({
+    required this.config,
+    required this.user,
+  });
   void init() {
     final option = HttpConnectionOptions(
-      httpClient: SignalrHttpClientImpl(client: DioClient()),
+      // httpClient: SignalrHttpClientImpl(client: DioClient()),
+      headers: MessageHeaders()
+        ..setHeaderValue('Authorization', 'Bearer ${user.accessToken}'),
       logMessageContent: true,
     );
     final builder =
@@ -89,19 +98,17 @@ class SignalrSocketManager {
     });
   }
 
-  late final Map<String, ConnectionIdChangedCallback>
-      _connectionChangedHandlers = {};
+  late final List<ConnectionIdChangedCallback> _connectionChangedHandlers = [];
 
   void registerCallbackOnConnectionIdChanged(
-    String id,
     ConnectionIdChangedCallback callback,
   ) {
-    _connectionChangedHandlers[id] = callback;
+    _connectionChangedHandlers.add(callback);
   }
 
   void _invokeRegisteredCallbackOnConnectionIdChanges(String connectionId) {
-    _connectionChangedHandlers.forEach((key, fun) {
-      print("Calling registered callback: $key");
+    _connectionChangedHandlers.forEach((fun) {
+      print("Calling registered callback");
       fun.call(connectionId);
     });
   }

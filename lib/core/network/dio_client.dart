@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+import 'package:quick_merchant_windows/core/debug.dart';
+import 'package:quick_merchant_windows/core/extensions/global_exts.dart';
 import '../exceptions/unknown_exception.dart';
 import '../models/api_response.dart';
 import 'apiclient.dart';
@@ -12,6 +14,7 @@ class DioClient implements ApiClient {
   factory DioClient() => _instance;
   late final Dio _client = Dio(
     BaseOptions(
+      validateStatus: (status) => true,
       sendTimeout: const Duration(seconds: 20),
       connectTimeout: const Duration(seconds: 20),
       receiveTimeout: const Duration(seconds: 20),
@@ -64,6 +67,7 @@ class DioClient implements ApiClient {
   ApiResponse<T> _handleResponse<T>(Response<dynamic> response,
       {T Function(Map<String, dynamic> json)? fromJson}) {
     final isSuccess = response.data['success'] as bool?;
+    detailsLog(isSuccess);
     if (isSuccess == true) {
       return ApiResponse(error: null, data: response.data);
     } else {
@@ -92,7 +96,7 @@ class DioClient implements ApiClient {
     try {
       final response = await _client.request(url,
           data: body, options: Options(method: method));
-      return _handleResponse<T>(response);
+      return ApiResponse(data: response.data);
     } catch (e, s) {
       print('put error $e \n stack trace: $s');
 

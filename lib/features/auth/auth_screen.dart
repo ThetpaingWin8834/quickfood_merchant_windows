@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'package:quick_merchant_windows/app.dart';
 import 'package:quick_merchant_windows/core/locale/my_locale.dart';
+import 'package:quick_merchant_windows/core/models/user.dart';
 import 'package:quick_merchant_windows/core/services/auth/auth_services.dart';
 import 'package:quick_merchant_windows/features/home/home_screen.dart';
 
@@ -21,22 +22,24 @@ class _AuthScreenState extends State<AuthScreen> {
       TextEditingController.fromValue(
           const TextEditingValue(text: 'Quick@123'));
 
-  bool isAuthenticated = false;
+  User? user;
   void login() async {
     final user = await AuthServices.login(
         usernameController.text.trim(), passwordController.text.trim());
     print(user);
     if (user != null) {
       setState(() {
-        isAuthenticated = true;
+        this.user = user;
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return isAuthenticated
-        ? HomeScreen()
+    return user != null
+        ? HomeScreen(
+            user: user!,
+          )
         : Scaffold(
             body: Container(
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 32),
