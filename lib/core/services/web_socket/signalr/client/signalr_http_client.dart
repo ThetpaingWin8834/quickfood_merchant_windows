@@ -11,8 +11,11 @@ class SignalrHttpClientImpl extends SignalRHttpClient {
   Future<SignalRHttpResponse> send(SignalRHttpRequest request) async {
     client.addHeaders(request.headers?.asMap ?? {});
     final response = await client.send(
-        request.url ?? '', request.method ?? 'GET',
-        body: request.content);
+      request.url ?? '',
+      request.method ?? 'GET',
+      body: request.content,
+      autoParsejson: false,
+    );
     return SignalRHttpResponse(
       response.statusCode ?? 0,
       statusText: response.statusMessage,

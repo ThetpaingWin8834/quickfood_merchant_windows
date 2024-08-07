@@ -1,13 +1,14 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:developer';
+
+import 'package:flutter/material.dart';
+import 'package:quick_merchant_windows/core/debug.dart';
+import 'package:rxdart/rxdart.dart';
 import 'package:signalr_netcore/ihub_protocol.dart';
 import 'package:signalr_netcore/signalr_client.dart';
-
 import 'package:quick_merchant_windows/core/models/user.dart';
-import 'package:quick_merchant_windows/core/network/dio_client.dart';
 import 'package:quick_merchant_windows/core/services/web_socket/models/socket_config.dart';
-import 'package:quick_merchant_windows/core/services/web_socket/signalr/client/signalr_http_client.dart';
-
-import '../../../models/remote_message.dart';
+import '../../../network/dio_client.dart';
+import 'client/signalr_http_client.dart';
 
 typedef SocketRes = List<Object?>?;
 typedef SocketReq = List<Object>?;
@@ -15,45 +16,48 @@ typedef MessageHandlerCallback = void Function(SocketRes);
 typedef ConnectionIdChangedCallback = void Function(String);
 
 class SignalrSocketManager {
-  // SignalrNotificationManager.internal();
-
-  // static SignalrNotificationManager _instance =
-  //     SignalrNotificationManager.internal();
-  // factory SignalrNotificationManager() => _instance;
   final SocketClientConfig config;
   final User user;
   HubConnection? _connection;
+  bool _isInitialized = false;
+  final BehaviorSubject<String> connectionIdStream = BehaviorSubject();
 
   SignalrSocketManager({
     required this.config,
     required this.user,
   });
-  void init() {
+
+  void _init() {
+    if (_isInitialized) return;
     final option = HttpConnectionOptions(
-      // httpClient: SignalrHttpClientImpl(client: DioClient()),
+      httpClient: SignalrHttpClientImpl(client: DioClient()),
       headers: MessageHeaders()
         ..setHeaderValue('Authorization', 'Bearer ${user.accessToken}'),
       logMessageContent: true,
     );
     final builder =
         HubConnectionBuilder().withUrl(config.hubUrl, options: option);
-    _connection?.onclose(
-      ({error}) {},
-    );
+
     if (config.autoReconnect) builder.withAutomaticReconnect();
     _connection = builder.build();
     _connection?.onclose(onClose);
     _connection?.onreconnected(onReconnected);
     _connection?.onreconnecting(onReconnecting);
+
+    _isInitialized = true;
   }
 
-  Future<void> startConnection() async {
-    _connection?.start()?.then((_) {
+  Future<String?> startConnection() async {
+    _init();
+    return await _connection?.start()?.then((_) {
       if (_connection?.connectionId != null) {
-        onConnectionIdChanged(_connection!.connectionId!);
+        _onConnectionIdChanged(_connection!.connectionId!);
+        return _connection?.connectionId;
+      } else {
+        return null;
       }
-    }, onError: (e) {
-      print('Failed to start SignalR connection: $e');
+    }, onError: (e, s) {
+      logger('Failed to start SignalR connection: $e');
     });
   }
 
@@ -63,15 +67,17 @@ class SignalrSocketManager {
   }
 
   void onClose({Exception? error}) {
-    print('SignalR connection closed: $error');
+    logger('SignalR connection closed: $error');
   }
 
   void onReconnecting({Exception? error}) {
-    print('SignalR connection reconnecting: $error');
+    logger('SignalR connection reconnecting: $error');
   }
 
   void onReconnected({String? connectionId}) {
-    print('SignalR connection reconnected: $connectionId');
+    _onConnectionIdChanged(connectionId!);
+
+    logger('SignalR connection reconnected: $connectionId');
   }
 
   void on(String methodName, MessageHandlerCallback callback) {
@@ -79,24 +85,34 @@ class SignalrSocketManager {
   }
 
   Future<Object?> invoke(String methodName, {SocketReq args}) async {
-    return await _connection?.invoke(methodName, args: args);
+    if (_connection?.state == HubConnectionState.Connected) {
+      return _connection?.invoke(methodName, args: args).catchError((e) {
+        return e;
+      });
+    } else {
+      return _connection?.state?.name;
+    }
   }
 
-  void registerOnCallback<T>(
-    String invokeType,
-    T Function(List<Object?>?) fromRemoteMessage,
-    void Function(RemoteMessage<T>) handler,
-  ) {
-    print("Socket client registered $invokeType");
-
-    _connection?.on(invokeType, (arg) {
-      print("Socket message received $arg");
-      handler(RemoteMessage(
-        invokeType: invokeType,
-        data: fromRemoteMessage(arg),
-      ));
-    });
+  void logger(dynamic d) {
+    log(d);
   }
+
+  // void registerOnCallback<T>(
+  //   String invokeType,
+  //   T Function(List<Object?>?) fromRemoteMessage,
+  //   void Function(RemoteMessage<T>) handler,
+  // ) {
+  //   print("Socket client registered $invokeType");
+
+  //   _connection?.on(invokeType, (arg) {
+  //     print("Socket message received $arg");
+  //     handler(RemoteMessage(
+  //       invokeType: invokeType,
+  //       data: fromRemoteMessage(arg),
+  //     ));
+  //   });
+  // }
 
   late final List<ConnectionIdChangedCallback> _connectionChangedHandlers = [];
 
@@ -107,13 +123,14 @@ class SignalrSocketManager {
   }
 
   void _invokeRegisteredCallbackOnConnectionIdChanges(String connectionId) {
-    _connectionChangedHandlers.forEach((fun) {
-      print("Calling registered callback");
+    for (var fun in _connectionChangedHandlers) {
+      logger("Calling registered callback");
       fun.call(connectionId);
-    });
+    }
   }
 
-  void onConnectionIdChanged(String connectionId) {
+  void _onConnectionIdChanged(String connectionId) {
+    connectionIdStream.add(connectionId);
     _invokeRegisteredCallbackOnConnectionIdChanges(connectionId);
   }
 }

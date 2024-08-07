@@ -14,7 +14,7 @@ extension ObjExts<T> on T {
     try {
       return fun(this);
     } catch (e, s) {
-      detailsLog(e, s: s);
+      dlog(e, s: s);
     }
     return null;
   }

@@ -11,7 +11,7 @@ abstract class ApiClient {
 
   Future<ApiResponse<T>> put<T>(String url, {required dynamic body});
   Future<ApiResponse<T>> send<T>(String url, String method,
-      {required dynamic body});
+      {required dynamic body, bool autoParsejson = true});
 
   Future<ApiResponse<T>> uploadFile<T>(String url,
       {required File file, String fileKey = 'file', required dynamic body});

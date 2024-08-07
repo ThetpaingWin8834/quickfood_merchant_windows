@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
@@ -29,7 +30,7 @@ class DioClient implements ApiClient {
         return handler.next(error);
       }
     }))
-    ..interceptors.add(PrettyDioLogger());
+    ..interceptors.add(LogInterceptor());
 
   void closeConnection() {
     _client.close();
@@ -67,7 +68,6 @@ class DioClient implements ApiClient {
   ApiResponse<T> _handleResponse<T>(Response<dynamic> response,
       {T Function(Map<String, dynamic> json)? fromJson}) {
     final isSuccess = response.data['success'] as bool?;
-    detailsLog(isSuccess);
     if (isSuccess == true) {
       return ApiResponse(error: null, data: response.data);
     } else {
@@ -92,11 +92,13 @@ class DioClient implements ApiClient {
 
   @override
   Future<ApiResponse<T>> send<T>(String url, String method,
-      {dynamic body}) async {
+      {dynamic body, bool autoParsejson = true}) async {
     try {
       final response = await _client.request(url,
           data: body, options: Options(method: method));
-      return ApiResponse(data: response.data);
+      return ApiResponse(
+          statusCode: response.statusCode,
+          data: autoParsejson ? response.data : jsonEncode(response.data));
     } catch (e, s) {
       print('put error $e \n stack trace: $s');
 
