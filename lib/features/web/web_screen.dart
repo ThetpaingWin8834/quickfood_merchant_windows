@@ -44,13 +44,13 @@ class _ExampleBrowser extends State<ExampleBrowser> {
         windowManager.setFullScreen(flag);
       }));
 
-      await _controller.setBackgroundColor(Colors.transparent);
-      await _controller.setPopupWindowPolicy(WebviewPopupWindowPolicy.allow);
-      await _controller.loadUrl('https://flutter.dev');
+      // await _controller.setBackgroundColor(Colors.transparent);
+      // await _controller.setPopupWindowPolicy(WebviewPopupWindowPolicy.allow);
+      // await _controller.loadUrl('https://hr.esoftmm.com');
 
       if (!mounted) return;
       setState(() {});
-    } on PlatformException catch (e) {
+    } catch (e, s) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         showDialog(
             context: context,
@@ -60,8 +60,8 @@ class _ExampleBrowser extends State<ExampleBrowser> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Code: ${e.code}'),
-                      Text('Message: ${e.message}'),
+                      Text('Code: ${e}'),
+                      Text('Message: ${s}'),
                     ],
                   ),
                   actions: [
@@ -162,20 +162,6 @@ class _ExampleBrowser extends State<ExampleBrowser> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        tooltip: _isWebviewSuspended ? 'Resume webview' : 'Suspend webview',
-        onPressed: () async {
-          if (_isWebviewSuspended) {
-            await _controller.resume();
-          } else {
-            await _controller.suspend();
-          }
-          setState(() {
-            _isWebviewSuspended = !_isWebviewSuspended;
-          });
-        },
-        child: Icon(_isWebviewSuspended ? Icons.play_arrow : Icons.pause),
-      ),
       appBar: AppBar(
           title: StreamBuilder<String>(
         stream: _controller.title,
