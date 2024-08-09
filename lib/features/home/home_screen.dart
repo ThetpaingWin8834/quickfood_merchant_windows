@@ -3,22 +3,23 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:quick_merchant_windows/app.dart';
+// import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:quick_merchant_windows/core/debug.dart';
 
 import 'package:quick_merchant_windows/core/models/user.dart';
 import 'package:quick_merchant_windows/core/services/web_socket/models/socket_config.dart';
 import 'package:quick_merchant_windows/core/services/web_socket/signalr/signalr_socket_manager.dart';
-import 'package:quick_merchant_windows/main.dart';
-
+import 'package:quick_merchant_windows/features/home/widgets/dashboard.dart';
+import 'package:quick_merchant_windows/features/home/widgets/drawer.dart';
 import '../../config/api_constants.dart';
+import '../../main.dart';
 
 class HomeScreen extends StatefulWidget {
   final User user;
   const HomeScreen({
-    Key? key,
+    super.key,
     required this.user,
-  }) : super(key: key);
+  });
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -28,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late Timer timer;
   late final SignalrSocketManager signalrSocketManager = SignalrSocketManager(
       user: widget.user,
-      config: SocketClientConfig(
+      config: const SocketClientConfig(
           hubUrl: ApiConstants.hubHost + ApiConstants.merchantOrderHubPath));
 
   String? connectionId;
@@ -59,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 5,
                 'Main Title',
                 '$data',
-                NotificationDetails(
+                const NotificationDetails(
                     windows: WindowsNotificationDetails(
                   subtitle: 'WindowsNotificationDetails Subtitle',
                   // header: WindowsHeader(id: id, title: title, arguments: arguments)
@@ -74,7 +75,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return const DashboardWidget();
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Text'),
+      ),
+      drawer: const DrawerWidget(),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -84,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ? null
                   : () {
                       Timer.periodic(
-                        Duration(seconds: 3),
+                        const Duration(seconds: 3),
                         (timer) {
                           this.timer = timer;
                           signalrSocketManager.invoke('SendTestMessage', args: [
@@ -92,20 +98,20 @@ class _HomeScreenState extends State<HomeScreen> {
                             'hello ${DateTime.now()}'
                           ]).then(
                             (value) {
-                              App.showSnackbar(value.toString());
+                              // App.showSnackbar(value.toString());
                             },
                           );
                         },
                       );
                     },
-              child: Text('Send')),
+              child: const Text('Send')),
           ElevatedButton(
               onPressed: connectionId == null
                   ? null
                   : () {
                       timer.cancel();
                     },
-              child: Text('Stop')),
+              child: const Text('Stop')),
         ],
       ),
     );

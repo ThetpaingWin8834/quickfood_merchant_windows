@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:webview_windows/webview_windows.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -16,7 +15,7 @@ class _ExampleBrowser extends State<ExampleBrowser> {
   final _controller = WebviewController();
   final _textController = TextEditingController();
   final List<StreamSubscription> _subscriptions = [];
-  bool _isWebviewSuspended = false;
+  final bool _isWebviewSuspended = false;
 
   @override
   void initState() {
@@ -44,9 +43,9 @@ class _ExampleBrowser extends State<ExampleBrowser> {
         windowManager.setFullScreen(flag);
       }));
 
-      // await _controller.setBackgroundColor(Colors.transparent);
-      // await _controller.setPopupWindowPolicy(WebviewPopupWindowPolicy.allow);
-      // await _controller.loadUrl('https://hr.esoftmm.com');
+      await _controller.setBackgroundColor(Colors.transparent);
+      await _controller.setPopupWindowPolicy(WebviewPopupWindowPolicy.allow);
+      await _controller.loadUrl('https://hr.esoftmm.com');
 
       if (!mounted) return;
       setState(() {});
@@ -60,8 +59,8 @@ class _ExampleBrowser extends State<ExampleBrowser> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Code: ${e}'),
-                      Text('Message: ${s}'),
+                      Text('Code: $e'),
+                      Text('Message: $s'),
                     ],
                   ),
                   actions: [

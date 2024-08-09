@@ -1,10 +1,4 @@
-import 'package:quick_merchant_windows/config/api_constants.dart';
-import 'package:quick_merchant_windows/core/enums/order_notification_types.dart';
-import 'package:quick_merchant_windows/core/services/web_socket/models/socket_config.dart';
-import 'package:quick_merchant_windows/core/services/web_socket/signalr/signalr_socket_manager.dart';
 
-import '../../../models/noti/noti_models.dart';
-import '../../../models/remote_message.dart';
 
 // class OrderSocket extends SignalrSocketManager {
 //   OrderSocket()

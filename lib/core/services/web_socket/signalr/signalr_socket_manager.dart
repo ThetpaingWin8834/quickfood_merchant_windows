@@ -1,7 +1,5 @@
 import 'dart:developer';
 
-import 'package:flutter/material.dart';
-import 'package:quick_merchant_windows/core/debug.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:signalr_netcore/ihub_protocol.dart';
 import 'package:signalr_netcore/signalr_client.dart';

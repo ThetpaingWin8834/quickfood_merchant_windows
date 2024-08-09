@@ -24,20 +24,44 @@ void main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    final flutterView = WidgetsBinding.instance.platformDispatcher.views.first;
+    final logicalSize = flutterView.physicalSize / flutterView.devicePixelRatio;
+
+    final WindowOptions windowOptions = WindowOptions(
+      minimumSize: Size(logicalSize.height, logicalSize.height * 0.6),
+    );
+    windowManager.waitUntilReadyToShow(windowOptions, () async {
+      await windowManager.show();
+      await windowManager.focus();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      restorationScopeId: 'Merchant',
+      restorationScopeId: 'QuickFood Merchant',
       supportedLocales: context.supportedLocales,
       localizationsDelegates: context.localizationDelegates,
       locale: context.locale,
       navigatorKey: App.navigatorKey,
-      title: 'Flutter Demo',
+      title: 'QuickFood Merchant',
       theme: AppTheme.lightTheme,
-      home: const AuthScreen(),
+      home: const Stack(
+        children: [
+          AuthScreen(),
+        ],
+      ),
     );
   }
 }
@@ -50,7 +74,5 @@ Future initNotification() async {
       guid: '0a0bd023-f296-4623-831d-c9af0a73c802',
     ),
   );
-
   await flutterLocalNotification.initialize(initializationSettings);
 }
-//https://hr.esoftmm.com/#/notification/specific

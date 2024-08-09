@@ -37,7 +37,7 @@ class AuthServices {
         print('error $e \n trace $s');
       }
     } else {
-      App.showSnackbar(res.error.toString());
+      // App.showSnackbar(res.error.toString());
     }
     return null;
   }

@@ -1,8 +1,16 @@
 {
+    "app_name":"QuickFood Merchant",
     "unknown_error":"Unknown error occur",
     "username":"Username",
     "password":"Password",
     "enter_password":"Enter Password",
     "enter_username":"Enter username",
-    "login":"Login"
+    "login":"Login",
+    "success":"Success",
+    "warning":"Warning",
+    "error":"Error",
+    "ok":"OK",
+    "cancel":"Cancel",
+    "continue":"Continue",
+    "retry":"Retry"
 }

@@ -2,9 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
-import 'package:pretty_dio_logger/pretty_dio_logger.dart';
-import 'package:quick_merchant_windows/core/debug.dart';
-import 'package:quick_merchant_windows/core/extensions/global_exts.dart';
 import '../exceptions/unknown_exception.dart';
 import '../models/api_response.dart';
 import 'apiclient.dart';

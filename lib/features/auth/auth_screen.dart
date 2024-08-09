@@ -5,7 +5,8 @@ import 'package:quick_merchant_windows/app.dart';
 import 'package:quick_merchant_windows/core/locale/my_locale.dart';
 import 'package:quick_merchant_windows/core/models/user.dart';
 import 'package:quick_merchant_windows/core/services/auth/auth_services.dart';
-import 'package:quick_merchant_windows/features/web/web_screen.dart';
+import 'package:quick_merchant_windows/features/home/home_screen.dart';
+import 'package:quick_merchant_windows/features/splash/splash.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -36,8 +37,13 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return SplashWidget(
+      onSplashAnimationFinished: () {},
+    );
     return user != null
-        ? ExampleBrowser()
+        ? HomeScreen(
+            user: user!,
+          )
         : Scaffold(
             body: Container(
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 32),
