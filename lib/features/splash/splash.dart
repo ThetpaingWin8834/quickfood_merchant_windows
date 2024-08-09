@@ -6,10 +6,8 @@ import 'package:quick_merchant_windows/core/assets/images.dart';
 import 'package:quick_merchant_windows/core/widgets/dialog/base_dialog.dart';
 
 class SplashWidget extends StatefulWidget {
-  final VoidCallback onSplashAnimationFinished;
   const SplashWidget({
     super.key,
-    required this.onSplashAnimationFinished,
   });
 
   @override
@@ -24,7 +22,7 @@ class _SplashWidgetState extends State<SplashWidget>
         ..addStatusListener(
           (status) {
             if (status == AnimationStatus.completed) {
-              widget.onSplashAnimationFinished();
+              AppConfig.onSplashAnimationFinished();
             }
           },
         );
@@ -33,20 +31,22 @@ class _SplashWidgetState extends State<SplashWidget>
 
   @override
   Widget build(BuildContext context) {
-    App.context = context;
-
     return Scaffold(
       body: Center(
         child: ScaleTransition(
           scale: _animation,
           child: InkWell(
             onTap: () {
-              App.showCustomDialog(
+              for (final type in DialogType.values) {
+                AppConfig.showCustomDialog(
                   title: 'Title',
                   message: "Hello world!",
                   onActionClick: () {},
                   onCancelClick: () {},
-                  type: DialogType.neutral);
+                  type: type,
+                );
+              }
+
               // App.showSnackbar();
             },
             child: Image.asset(Images.shopLogo),

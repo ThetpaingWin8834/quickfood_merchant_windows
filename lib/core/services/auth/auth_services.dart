@@ -7,15 +7,16 @@ import '../../models/user.dart';
 
 class AuthServices {
   AuthServices._();
+
   static Future<User?> login(String username, String password) async {
-    App.showLoadingOverlay();
+    AppConfig.showLoadingOverlay();
     String uri = "${ApiConstants.mainUrl}auth/access-token";
     final res = await DioClient().post(uri,
         body: FormData.fromMap({
           "Username": username,
           "Password": password,
         }));
-    App.hideLoadingOverlay();
+    AppConfig.hideLoadingOverlay();
 
     if (res.isSuccess) {
       try {

@@ -1,14 +1,19 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:quick_merchant_windows/core/assets/images.dart';
+import 'package:quick_merchant_windows/core/debug.dart';
+import 'package:quick_merchant_windows/core/models/user.dart';
 import 'package:quick_merchant_windows/core/utils/current_config.dart';
 import 'package:quick_merchant_windows/core/widgets/dialog/base_dialog.dart';
+import 'package:rxdart/rxdart.dart';
 
-class App {
-  App._();
+class AppConfig {
+  AppConfig._();
   static final navigatorKey = GlobalKey<NavigatorState>();
-  static BuildContext? _context;
-  static set context(BuildContext con) => _context = con;
-  static BuildContext get context => _context!;
+  // static BuildContext? _context;
+  // static set context(BuildContext con) => _context = con;
+  static BuildContext get context => navigatorKey.currentState!.context;
   static CurrentConfig currentConfig = CurrentConfig(context: context);
   static double get screenwidth => currentConfig.width;
   static double get screenHeight => currentConfig.height;
@@ -16,6 +21,15 @@ class App {
   static ColorScheme get colorSchema => Theme.of(context).colorScheme;
   static final _dialogManager = DialogManager(context);
   static final materialBannerManager = MaterialBannerManager(context);
+  static final Completer<bool> _splashAnimationCompletor = Completer();
+
+  static final BehaviorSubject<User?> currentUser = BehaviorSubject();
+
+  static void onSplashAnimationFinished() {
+    if (!_splashAnimationCompletor.isCompleted) {
+      _splashAnimationCompletor.complete(true);
+    }
+  }
 
   //ui
   static bool isLoadingShowing = false;
@@ -49,6 +63,14 @@ class App {
     }
   }
 
+  static void hideDialog() {
+    _dialogManager.hideDialog();
+  }
+
+  // static void hideAllDialog() {
+  //   _dialogManager.hideAllDialog();
+  // }
+
   static void showCustomDialog({
     final DialogType type = DialogType.neutral,
     required final String? title,
@@ -73,16 +95,11 @@ class App {
     );
   }
 
-  // static void showSnackbar(String message) {
-  //   ScaffoldMessenger.of(context).showSnackBar(
-  //     SnackBar(
-  //       content: Text(message),
-  //     ),
-  //   );
-  // }
-
   //colors
   static final containerColor = Colors.grey.shade100;
+
+  //auth
+  static void login() {}
 }
 
 class MaterialBannerManager {
@@ -168,6 +185,7 @@ class DialogManager {
         );
       },
     ).then((_) {
+      dlog('removed');
       _diaStack.removeLast();
     });
   }
@@ -180,6 +198,8 @@ class DialogManager {
 
   void hideAllDialog() {
     while (_diaStack.isNotEmpty) {
+      dlog('removing');
+
       Navigator.pop(context);
     }
   }

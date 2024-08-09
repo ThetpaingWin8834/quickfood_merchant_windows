@@ -37,9 +37,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SplashWidget(
-      onSplashAnimationFinished: () {},
-    );
+    return SplashWidget();
     return user != null
         ? HomeScreen(
             user: user!,
@@ -67,7 +65,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     ),
                     Container(
                       padding: const EdgeInsets.symmetric(vertical: 16),
-                      width: App.screenwidth,
+                      width: AppConfig.screenwidth,
                       child: ElevatedButton(
                         onPressed: login,
                         child: Text(MyLocale.login),
@@ -101,13 +99,13 @@ class _TitleAndTextField extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Text(
             title,
-            style: App.textTheme.titleMedium,
+            style: AppConfig.textTheme.titleMedium,
           ),
         ),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 6),
           decoration: BoxDecoration(
-            color: App.containerColor,
+            color: AppConfig.containerColor,
             borderRadius: BorderRadius.circular(16),
           ),
           child: TextField(

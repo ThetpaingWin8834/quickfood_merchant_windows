@@ -83,7 +83,7 @@ class BaseDialog extends StatelessWidget {
                   // ),
                   const SizedBox(width: 12),
                   Expanded(child: Text(MyLocale.appName)),
-                  const CloseButton()
+                  CloseButton()
                 ],
               ),
             ),
@@ -111,7 +111,7 @@ class BaseDialog extends StatelessWidget {
                           children: [
                             Text(
                               title!,
-                              style: App.textTheme.titleMedium
+                              style: AppConfig.textTheme.titleMedium
                                   ?.copyWith(color: getColor),
                             ),
                             Text(message),
@@ -132,13 +132,15 @@ class BaseDialog extends StatelessWidget {
                   if (showCancelButton)
                     OutlinedButton(
                         style: OutlinedButton.styleFrom(
-                            side: BorderSide(
-                              color: getColor,
-                              width: 0.7,
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                            )),
+                          overlayColor: getColor,
+                          side: BorderSide(
+                            color: getColor,
+                            width: 0.7,
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                          ),
+                        ),
                         onPressed: () {
                           Navigator.pop(context);
                           onCancelClick?.call();

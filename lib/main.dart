@@ -54,7 +54,7 @@ class _MyAppState extends State<MyApp> {
       supportedLocales: context.supportedLocales,
       localizationsDelegates: context.localizationDelegates,
       locale: context.locale,
-      navigatorKey: App.navigatorKey,
+      navigatorKey: AppConfig.navigatorKey,
       title: 'QuickFood Merchant',
       theme: AppTheme.lightTheme,
       home: const Stack(
